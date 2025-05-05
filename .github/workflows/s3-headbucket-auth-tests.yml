@@ -1,0 +1,40 @@
+name: S3 HeadBucket Auth Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 's3-headbucket-auth/**'
+      - '.github/workflows/s3-headbucket-auth-tests.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 's3-headbucket-auth/**'
+      - '.github/workflows/s3-headbucket-auth-tests.yml'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  test:
+    name: Run S3 HeadBucket Auth Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24.0'
+        check-latest: true
+    # We are testing this without cred to show vuln if any.
+    # - name: Configure AWS Credentials
+    #   uses: aws-actions/configure-aws-credentials@v4
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: us-east-1
+        
+    - name: Run tests
+      working-directory: ./s3-headbucket-auth
+      run: go test -v ./...
